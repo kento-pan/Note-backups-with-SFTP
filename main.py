@@ -59,7 +59,6 @@ def upload():
             print("Please type a number, not a string.")
             continue
     sftp_upload()
-    print("Job completed.\n--------------")
 
 
 def download():
@@ -86,7 +85,6 @@ def download():
                 print("Please type a number, not a string.")
                 continue
         sftp_download()
-        print("Job completed.\n--------------")
 
 
 def sftp_upload():
@@ -154,7 +152,6 @@ def remove():
     sftp.remove(file_remove)
     print(f"{file_remove} has been removed from the server.")
     list_server_files()
-    print("Job completed.\n--------------")
 
 
 def select_mode():
@@ -163,13 +160,16 @@ def select_mode():
         mode = input("What would you like to do? \nType 'up', if you would like to upload a file. \nType 'down', if you would like to download a file. \nType 'remove', if you would like to remove a file from the server. \nType 'exit', if you would like to end the session.\n")
         if mode == "up":
             upload()
+            print("Job completed.\n--------------")
             select_mode()
         if mode == "down":
             download()
             decrypt()
+            print("Job completed.\n--------------")
             select_mode()
         if mode == "remove":
             remove()
+            print("Job completed.\n--------------")
             select_mode()
         if mode == "exit":
             input("Connection closed. Press enter to exit session.\n")
