@@ -7,7 +7,7 @@ import pyAesCrypt
 warnings.simplefilter("ignore", UserWarning)
 
 bufferSize = 64 * 1024
-aes_password = "PLACEHOLDER"
+aes_password = "0x00001"
 
 
 def list_local_files():
@@ -62,29 +62,24 @@ def upload():
 
 
 def download():
-    list_server_files()
-    if len(list_server_files.server_files) == 0:
-        print("No files found.\n--------------")
-        select_mode()
-    else:
-        print(f"Current local directory: {os.getcwd()}")
-        print("Please choose a file to download. Type '0', '1', '2', etc. ")
-        while True:
-            try:
-                file_download_input = int(input())
-                download.file_download = list_server_files.server_files[file_download_input]
-                if file_download_input < 0:
-                    print("Please choose a valid number within range.")
-                    continue
-                print(f"You have chosen to download: {download.file_download}")
-                break
-            except IndexError:
+    print(f"Current local directory: {os.getcwd()}")
+    print("Please choose a file to download. Type '0', '1', '2', etc. ")
+    while True:
+        try:
+            file_download_input = int(input())
+            download.file_download = list_server_files.server_files[file_download_input]
+            if file_download_input < 0:
                 print("Please choose a valid number within range.")
                 continue
-            except ValueError:
-                print("Please type a number, not a string.")
-                continue
-        sftp_download()
+            print(f"You have chosen to download: {download.file_download}")
+            break
+        except IndexError:
+            print("Please choose a valid number within range.")
+            continue
+        except ValueError:
+            print("Please type a number, not a string.")
+            continue
+    sftp_download()
 
 
 def sftp_upload():
@@ -133,25 +128,29 @@ def sftp_download():
 
 def remove():
     list_server_files()
-    print("Choose the file you want to remove. Type '0', '1', '2', etc. ")
-    while True:
-        try:
-            file_remove_input = int(input())
-            file_remove = list_server_files.server_files[file_remove_input]
-            if file_remove_input < 0:
+    if len(list_server_files.server_files) == 0:
+        print("No files found.\n--------------")
+        select_mode()
+    else:
+        print("Choose the file you want to remove. Type '0', '1', '2', etc. ")
+        while True:
+            try:
+                file_remove_input = int(input())
+                file_remove = list_server_files.server_files[file_remove_input]
+                if file_remove_input < 0:
+                    print("Please choose a valid number within range.")
+                    continue
+                print(f"You have chosen to remove: {file_remove}")
+                break
+            except IndexError:
                 print("Please choose a valid number within range.")
                 continue
-            print(f"You have chosen to remove: {file_remove}")
-            break
-        except IndexError:
-            print("Please choose a valid number within range.")
-            continue
-        except ValueError:
-            print("Please type a number, not a string.")
-            continue
-    sftp.remove(file_remove)
-    print(f"{file_remove} has been removed from the server.")
-    list_server_files()
+            except ValueError:
+                print("Please type a number, not a string.")
+                continue
+        sftp.remove(file_remove)
+        print(f"{file_remove} has been removed from the server.")
+        list_server_files()
 
 
 def select_mode():
@@ -163,13 +162,21 @@ def select_mode():
             print("Job completed.\n--------------")
             select_mode()
         if mode == "down":
-            download()
-            decrypt()
-            print("Job completed.\n--------------")
+            list_server_files()
+            if len(list_server_files.server_files) == 0:
+                print("No files found.\n--------------")
+            else:
+                download()
+                decrypt()
+                print("Job completed.\n--------------")
             select_mode()
         if mode == "remove":
-            remove()
-            print("Job completed.\n--------------")
+            list_server_files()
+            if len(list_server_files.server_files) == 0:
+                print("No files found.\n--------------")
+            else:
+                remove()
+                print("Job completed.\n--------------")
             select_mode()
         if mode == "exit":
             input("Connection closed. Press enter to exit session.\n")
