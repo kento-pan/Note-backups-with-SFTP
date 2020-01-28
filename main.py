@@ -3,11 +3,12 @@ import warnings
 import pysftp
 import sftp_config
 import pyAesCrypt
+from paramiko.ssh_exception import SSHException
 
 warnings.simplefilter("ignore", UserWarning)
 
 bufferSize = 64 * 1024
-aes_password = "0x00001"
+aes_password = "PLACEHOLDER"
 
 
 def list_local_files():
@@ -188,7 +189,10 @@ cnopts = pysftp.CnOpts()
 cnopts.hostkeys = None
 
 # Initiate SFTP connection
-with pysftp.Connection(sftp_config.dnshost, username=sftp_config.username, password=sftp_config.password, port=sftp_config.port, cnopts=cnopts) as sftp:
-    with sftp.cd("Note_Backups"):
-        print(f"Connection to {sftp_config.dnshost}:{sftp_config.port} established. Directory: {sftp.getcwd()}")
-        select_mode()
+try:
+    with pysftp.Connection(sftp_config.dnshost, username=sftp_config.username, password=sftp_config.password, port=sftp_config.port, cnopts=cnopts) as sftp:
+        with sftp.cd("Note_Backups"):
+            print(f"Connection to {sftp_config.dnshost}:{sftp_config.port} established. Directory: {sftp.getcwd()}")
+            select_mode()
+except SSHException:
+    print(f"Unable to connect to {sftp_config.dnshost}. Verify if the server is running.")
